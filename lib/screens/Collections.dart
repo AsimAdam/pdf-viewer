@@ -1,8 +1,10 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_constructors_in_immutables, library_private_types_in_public_api
-import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pdf/screens/CollectionsDetails.dart';
 
 class CollectionsPage extends StatefulWidget {
   final List<Map<String, dynamic>> collections;
@@ -27,6 +29,11 @@ class _CollectionsPageState extends State<CollectionsPage> {
     if (collectionsJson != null) {
       final List<dynamic> decodedCollections = json.decode(collectionsJson);
       collections = List<Map<String, dynamic>>.from(decodedCollections);
+      collections.sort((a, b) {
+        final DateTime dateA = DateTime.parse(a['creationDate']);
+        final DateTime dateB = DateTime.parse(b['creationDate']);
+        return dateB.compareTo(dateA);
+      });
     }
     setState(() {});
   }
@@ -42,15 +49,46 @@ class _CollectionsPageState extends State<CollectionsPage> {
         itemBuilder: (context, index) {
           final collection = collections[index];
           final collectionName = collection['collectionName'];
-          final pdfFileNames = collection['pdfFileNames'];
           final creationDate = collection['creationDate'];
 
-          return ListTile(
-            leading: Icon(Icons.folder),
-            title: Text(collectionName),
-            subtitle: Text(
-                'Files: ${pdfFileNames.join(", ")}\nCreated: $creationDate'),
-            onTap: () {},
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              leading: Icon(Icons.folder, size: 40),
+              title: Text(
+                collectionName,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              trailing: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  DateFormat('MMM d, y').format(DateTime.parse(creationDate)),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CollectionDetailsPage(
+                      collectionName: collectionName,
+                      pdfFileNames: [],
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
