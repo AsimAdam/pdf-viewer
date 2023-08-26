@@ -1,6 +1,7 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, sized_box_for_whitespace, must_be_immutable, prefer_typing_uninitialized_variables, unused_import, prefer_const_constructors_in_immutables
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, sized_box_for_whitespace, must_be_immutable, prefer_typing_uninitialized_variables, unused_import, prefer_const_constructors_in_immutables, depend_on_referenced_packages
 import 'package:flutter/material.dart';
-import 'package:pdf/screens/Collections.dart';
+import 'package:pdfviewer/screens/Collections.dart';
+import 'package:pdfviewer/screens/Converter.dart';
 
 class SideDrawer extends StatelessWidget {
   final List<Map<String, dynamic>> collections;
@@ -29,7 +30,14 @@ class SideDrawer extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.change_circle),
               title: Text('Convert'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Converter(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.collections),

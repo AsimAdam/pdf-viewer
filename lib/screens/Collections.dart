@@ -1,10 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables, depend_on_referenced_packages, prefer_const_constructors_in_immutables
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pdf/screens/CollectionsDetails.dart';
+import 'package:pdfviewer/screens/CollectionsDetails.dart';
 
 class CollectionsPage extends StatefulWidget {
   final List<Map<String, dynamic>> collections;

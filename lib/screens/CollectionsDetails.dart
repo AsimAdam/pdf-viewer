@@ -1,11 +1,13 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, use_key_in_widget_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_declarations, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class CollectionDetailsPage extends StatelessWidget {
   final String collectionName;
   final List<String> pdfFileNames;
 
+  // ignore: prefer_const_constructors_in_immutables
   CollectionDetailsPage({
     required this.collectionName,
     required this.pdfFileNames,
@@ -25,7 +27,19 @@ class CollectionDetailsPage extends StatelessWidget {
           return ListTile(
             leading: Icon(Icons.picture_as_pdf),
             title: Text(pdfFileName),
-            onTap: () {},
+            onTap: () async {
+              // Get the path to the PDF file
+              final pdfPath = ''; // Replace this with the actual path
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PDFView(
+                    filePath: pdfPath,
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

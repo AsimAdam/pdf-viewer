@@ -1,7 +1,7 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, depend_on_referenced_packages
 
 import 'package:flutter/material.dart';
-import 'package:pdf/screens/Home.dart';
+import 'package:pdfviewer/screens/Home.dart';
 // import 'package:pdf/screens/Home.dart';
 
 class SetUp extends StatefulWidget {

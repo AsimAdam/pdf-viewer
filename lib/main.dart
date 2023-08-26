@@ -1,5 +1,7 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
-import 'package:pdf/screens/StartingScreen.dart';
+import 'package:pdfviewer/screens/StartingScreen.dart';
 
 void main() {
   runApp(const MyApp());

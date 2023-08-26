@@ -1,11 +1,13 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, avoid_print, prefer_const_literals_to_create_immutables, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf/screens/PdfViewer.dart';
-import 'package:pdf/screens/SideDrawer.dart';
+// import 'package:path_provider/path_provider.dart';
+import 'package:pdfviewer/screens/PdfViewer.dart';
+import 'package:pdfviewer/screens/SideDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:io';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title, this.collections = const []})
@@ -106,24 +108,19 @@ class _MyHomePageState extends State<HomePage> {
 
   void _createAndSaveCollection(
       String collectionName, List<String> pdfFileNames) async {
-    // Create the new collection map
     final newCollection = {
       'collectionName': collectionName,
       'pdfFileNames': pdfFileNames,
       'creationDate': DateTime.now().toString(),
     };
 
-    // Add the new collection to the existing collections list
     collections.add(newCollection);
 
-    // Convert collections to JSON-encoded string
     final collectionsJson = json.encode(collections);
 
-    // Save the collections data to shared preferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('collections', collectionsJson);
 
-    // Log the event
     print('Collection saved: $collectionName ($pdfFileNames)');
   }
 

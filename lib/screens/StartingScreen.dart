@@ -1,7 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api, sized_box_for_whitespace, prefer_const_constructors, file_names
+// ignore_for_file: library_private_types_in_public_api, sized_box_for_whitespace, prefer_const_constructors, file_names, depend_on_referenced_packages
 
 import 'package:flutter/material.dart';
-import 'package:pdf/screens/SetUp.dart';
+import 'package:pdfviewer/screens/SetUp.dart';
 
 class StartingScreen extends StatefulWidget {
   const StartingScreen({Key? key}) : super(key: key);
