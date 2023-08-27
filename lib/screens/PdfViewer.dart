@@ -9,7 +9,10 @@ class PDFViewerPage extends StatelessWidget {
   final String pdfPath;
   final String pdfFileName;
 
-  PDFViewerPage({required this.pdfPath, required this.pdfFileName});
+  PDFViewerPage(
+      {required this.pdfPath,
+      required this.pdfFileName,
+      required String filePath});
 
   Future<void> _savePDFToDevice() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
