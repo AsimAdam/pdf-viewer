@@ -1,16 +1,15 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, sized_box_for_whitespace, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:pdfviewer/screens/AboutUs.dart';
 import 'package:pdfviewer/screens/Collections.dart';
-// import 'package:pdfviewer/screens/Converter.dart';
 import 'package:pdfviewer/screens/Home.dart';
-// import 'package:pdfviewer/screens/Generate.dart';
 
 class SideDrawer extends StatelessWidget {
   final List<Map<String, dynamic>> collections;
   final String nickName;
 
-  SideDrawer({required this.collections, required this.nickName});
+  const SideDrawer({required this.collections, required this.nickName});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class SideDrawer extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Hi, $nickName', // Display the nickname here
+                      'Hi, $nickName',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -55,7 +54,7 @@ class SideDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(Icons.change_circle),
-                title: Text('Generate'),
+                title: Text('Generate PDF'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -69,7 +68,7 @@ class SideDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.collections),
+                leading: Icon(Icons.picture_as_pdf),
                 title: Text('Collections'),
                 onTap: () {
                   Navigator.push(
@@ -83,18 +82,15 @@ class SideDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.security),
-                title: Text('Protect'),
+                leading: Icon(Icons.info),
+                title: Text('About us'),
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => Generate(
-                  //       collections: collections,
-                  //       nickName: nickName,
-                  //     ),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutUsPage(),
+                    ),
+                  );
                 },
               ),
             ],

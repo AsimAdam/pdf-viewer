@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables, depend_on_referenced_packages, prefer_const_constructors_in_immutables, unused_import
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables, depend_on_referenced_packages, prefer_const_constructors_in_immutables, unused_import, use_build_context_synchronously, unnecessary_brace_in_string_interps, avoid_print, deprecated_member_use
 
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -119,6 +119,7 @@ class CollectionsPage extends StatefulWidget {
 
 class _CollectionsPageState extends State<CollectionsPage> {
   List<Map<String, dynamic>> collections = [];
+  List<String> selectedPdfFilePath = [];
 
   @override
   void initState() {
@@ -143,7 +144,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
   Future<void> _showCreateCollectionDialog() async {
     String collectionName = '';
+    String collectionFiles = '';
     List<String> selectedPdfFileNames = [];
+    List<dynamic> selectedPdfFilePath = [];
 
     showDialog(
       context: context,
@@ -172,6 +175,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.deepPurple,
+                      onPrimary: Color.fromARGB(255, 249, 224, 253)),
                   onPressed: () async {
                     Navigator.pop(context);
                     FilePickerResult? result =
@@ -183,8 +189,15 @@ class _CollectionsPageState extends State<CollectionsPage> {
                     if (result != null) {
                       selectedPdfFileNames =
                           result.files.map((file) => file.name).toList();
+                      selectedPdfFilePath =
+                          result.files.map((file) => file.path).toList();
+                      print(
+                          'path: ${selectedPdfFilePath[0]}'); // Print the correct path
                       _showConfirmationDialog(
-                          collectionName, selectedPdfFileNames);
+                          collectionName,
+                          selectedPdfFileNames,
+                          collectionFiles,
+                          selectedPdfFilePath);
                     }
                   },
                   icon: Icon(Icons.upload_file),
@@ -199,12 +212,15 @@ class _CollectionsPageState extends State<CollectionsPage> {
   }
 
   Future<void> _showConfirmationDialog(
-      String collectionName, List<String> selectedPdfFileNames) async {
+      String collectionName,
+      List<String> selectedPdfFileNames,
+      String collectionFiles,
+      List selectedPdfFilePath) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Collection Creation'),
+          title: Text('Are you sure you want to proceed?'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,6 +232,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 249, 224, 253),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -225,10 +244,18 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.deepPurple,
+                        onPrimary: Color.fromARGB(255, 249, 224, 253),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                         _createAndSaveCollection(
-                            collectionName, selectedPdfFileNames);
+                          collectionName,
+                          selectedPdfFileNames,
+                          collectionFiles,
+                          List<String>.from(selectedPdfFilePath),
+                        );
                       },
                       child: Text('Create'),
                     ),
@@ -243,9 +270,13 @@ class _CollectionsPageState extends State<CollectionsPage> {
   }
 
   void _createAndSaveCollection(
-      String collectionName, List<String> pdfFileNames) async {
+      String collectionName,
+      List<String> pdfFileNames,
+      String collectionFiles,
+      List<String> selectedPdfFilePath) async {
     final newCollection = {
       'collectionName': collectionName,
+      'collectionFiles': collectionFiles,
       'pdfFileNames': pdfFileNames,
       'creationDate': DateTime.now().toString(),
     };
@@ -258,87 +289,124 @@ class _CollectionsPageState extends State<CollectionsPage> {
     await prefs.setString('collections', collectionsJson);
 
     final directory = await getApplicationDocumentsDirectory();
-    final collectionDirectory = Directory('${directory.path}/$collectionName');
+    final collectionDirectoryName =
+        '$collectionName, ${pdfFileNames.join(", ")}'; // Correct directory name
+    final collectionDirectory =
+        Directory('${directory.path}/$collectionDirectoryName');
     if (!collectionDirectory.existsSync()) {
       collectionDirectory.createSync();
     }
 
-    // Move the selected PDF files to the collection directory
-    for (String pdfFileName in pdfFileNames) {
-      // Assuming the source PDF files are located in the app's documents directory
-      final pdfSourceFile = File('${directory.path}/$pdfFileName');
+    for (int i = 0; i < pdfFileNames.length; i++) {
+      final pdfSourceFile =
+          File(selectedPdfFilePath[i]); // Use selectedPdfFilePath
 
       if (pdfSourceFile.existsSync()) {
         final pdfDestinationFile =
-            File('${collectionDirectory.path}/$pdfFileName');
+            File('${collectionDirectory.path}/${pdfFileNames[i]}');
         pdfSourceFile.copySync(pdfDestinationFile.path);
       } else {
-        print('Source PDF file not found: $pdfFileName');
+        print('Source PDF file not found: ${selectedPdfFilePath[i]}');
       }
     }
 
-    print('Collection saved: $collectionName ($pdfFileNames)');
+    setState(() {
+      collections = List<Map<String, dynamic>>.from(collections);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Collections'),
+        title: Text(
+          'Collections',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
-      body: ListView.builder(
-        itemCount: collections.length,
-        itemBuilder: (context, index) {
-          final collection = collections[index];
-          final collectionName = collection['collectionName'];
-          final creationDate = collection['creationDate'];
+      body: collections.isEmpty
+          ? Center(
+              child: Text(
+                "You don't have any collections yet.\nPress the ⊕ button to create collections.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _fetchCollections,
+              child: CustomScrollView(
+                slivers: [
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final collection = collections[index];
+                        final collectionName = collection['collectionName'];
+                        final creationDate = collection['creationDate'];
 
-          return Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 249, 224, 253),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              leading: Icon(Icons.folder, size: 40),
-              title: Text(
-                collectionName,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              trailing: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.purple.shade500,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  DateFormat('MMM d, y').format(DateTime.parse(creationDate)),
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CollectionDetailsPage(
-                      collectionName: collectionName,
-                      pdfFileNames:
-                          List<String>.from(collection['pdfFileNames']),
-                      creationDates: [
-                        DateTime.parse(collection['creationDate'])
-                      ],
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          margin:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.folder,
+                              size: 50,
+                              color: Color.fromARGB(255, 249, 224, 253),
+                            ),
+                            title: Text(
+                              collectionName,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 249, 224, 253)),
+                            ),
+                            trailing: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 249, 224, 253),
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                DateFormat('MMM d, y')
+                                    .format(DateTime.parse(creationDate)),
+                                style: TextStyle(color: Colors.deepPurple),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CollectionDetailsPage(
+                                    collectionName: collectionName,
+                                    pdfFileNames: List<String>.from(
+                                        collection['pdfFileNames']),
+                                    creationDates: [
+                                      DateTime.parse(collection['creationDate'])
+                                    ],
+                                    collectionFiles: '',
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      childCount: collections.length,
                     ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Color.fromARGB(255, 249, 224, 253),
         onPressed: _showCreateCollectionDialog,
         tooltip: 'Create Collection',
         child: const Icon(Icons.add),

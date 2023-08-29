@@ -219,7 +219,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:pdfviewer/screens/SideDrawer.dart';
-import 'package:pdfviewer/screens/Generate.dart'; // Import your Generate page
+import 'package:pdfviewer/screens/Generate.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class HomePage extends StatelessWidget {
@@ -233,25 +233,24 @@ class HomePage extends StatelessWidget {
 
   final String title;
   final List<Map<String, dynamic>> collections;
-  final String _nickName; // Store the nickname in a private variable
-
+  final String _nickName;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.deepPurple,
         title: Text(title),
       ),
       drawer: Theme(
         data: Theme.of(context).copyWith(
-          iconTheme: IconThemeData(size: 60), // Adjust the icon size as needed
-        ),
+            // iconTheme: IconThemeData(size: 60),
+            ),
         child: SideDrawer(
           collections: collections,
-          nickName: _nickName, // Pass the stored nickname
+          nickName: _nickName,
         ),
       ),
-      body: GenerateContent(), // Placing the content from Generate here
+      body: GenerateContent(),
     );
   }
 }
@@ -327,23 +326,32 @@ class _GenerateContentState extends State<GenerateContent> {
           ),
           SizedBox(height: 20),
           Container(
-            width: MediaQuery.of(context).size.width * 0.95,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GeneratedPdfScreen(
-                      title: _titleController.text,
-                      paragraph: _paragraphController.document.toPlainText(),
+              width: MediaQuery.of(context).size.width * 0.95,
+              height: 50,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.deepPurple),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GeneratedPdfScreen(
+                        title: _titleController.text,
+                        paragraph: _paragraphController.document.toPlainText(),
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text('Create PDF'),
-            ),
-          ),
+                  );
+                },
+                child: Text(
+                  'Generate PDF',
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 249, 224, 253),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800),
+                ),
+              )),
         ],
       ),
     );

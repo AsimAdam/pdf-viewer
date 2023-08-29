@@ -202,7 +202,7 @@ class GeneratedPdfScreen extends StatelessWidget {
   final String title;
   final String paragraph;
 
-  GeneratedPdfScreen({
+  const GeneratedPdfScreen({
     required this.title,
     required this.paragraph,
   });

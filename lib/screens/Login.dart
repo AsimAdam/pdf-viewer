@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:pdfviewer/screens/SetUp.dart';
@@ -75,9 +75,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 20),
             TextButton(
-              onPressed: () {
-                // Navigate to the recovery code page
-              },
+              onPressed: () {},
               child: Text(
                 'Forgot your key? Enter Recovery Code',
                 style: TextStyle(
