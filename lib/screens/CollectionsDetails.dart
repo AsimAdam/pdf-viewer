@@ -178,9 +178,10 @@ class CollectionDetailsPage extends StatelessWidget {
                   color: Color.fromARGB(255, 249, 224, 253),
                 ),
                 onPressed: () async {
-                  final collectionDirectory =
-                      await getApplicationDocumentsDirectory();
-                  final pdfPath = p.join(collectionDirectory.path, pdfFileName);
+                  final collectionCacheDirectory =
+                      await getTemporaryDirectory();
+                  final pdfPath = p.join(collectionCacheDirectory.path,
+                      'file_picker', pdfFileName);
                   final pdfFile = File(pdfPath);
                   final pdfExists = await pdfFile.exists();
 

@@ -9,14 +9,12 @@ class ContentPage extends pdfWid.StatelessWidget {
   final String hashtag;
   final String author;
   final String followText;
-  // final pdfWid.ImageProvider imageProvider;
 
   ContentPage({
     required this.title,
     required this.hashtag,
     required this.author,
     required this.followText,
-    // required this.imageProvider,
   });
 
   @override
@@ -33,7 +31,6 @@ class ContentPage extends pdfWid.StatelessWidget {
         pdfWid.Text(hashtag),
         pdfWid.Text(author),
         pdfWid.Text(followText),
-        // pdfWid.Image(imageProvider),
       ],
     );
   }

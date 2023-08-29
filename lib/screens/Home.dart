@@ -240,11 +240,23 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: Text(title),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(
+                Icons.menu,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
       ),
       drawer: Theme(
-        data: Theme.of(context).copyWith(
-            // iconTheme: IconThemeData(size: 60),
-            ),
+        data: Theme.of(context).copyWith(),
         child: SideDrawer(
           collections: collections,
           nickName: _nickName,

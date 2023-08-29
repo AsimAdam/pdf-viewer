@@ -191,8 +191,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                           result.files.map((file) => file.name).toList();
                       selectedPdfFilePath =
                           result.files.map((file) => file.path).toList();
-                      print(
-                          'path: ${selectedPdfFilePath[0]}'); // Print the correct path
+                      print('path: ${selectedPdfFilePath[0]}');
                       _showConfirmationDialog(
                           collectionName,
                           selectedPdfFileNames,
@@ -283,6 +282,12 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
     collections.add(newCollection);
 
+    collections.sort((a, b) {
+      final DateTime dateA = DateTime.parse(a['creationDate']);
+      final DateTime dateB = DateTime.parse(b['creationDate']);
+      return dateB.compareTo(dateA);
+    });
+
     final collectionsJson = json.encode(collections);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -290,7 +295,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
     final directory = await getApplicationDocumentsDirectory();
     final collectionDirectoryName =
-        '$collectionName, ${pdfFileNames.join(", ")}'; // Correct directory name
+        '$collectionName, ${pdfFileNames.join(", ")}';
     final collectionDirectory =
         Directory('${directory.path}/$collectionDirectoryName');
     if (!collectionDirectory.existsSync()) {
@@ -298,8 +303,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
     }
 
     for (int i = 0; i < pdfFileNames.length; i++) {
-      final pdfSourceFile =
-          File(selectedPdfFilePath[i]); // Use selectedPdfFilePath
+      final pdfSourceFile = File(selectedPdfFilePath[i]);
 
       if (pdfSourceFile.existsSync()) {
         final pdfDestinationFile =

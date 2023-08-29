@@ -358,7 +358,10 @@ class _SetUpState extends State<SetUp> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('$nickName is ready'),
-                            content: Text('Do you want to continue?'),
+                            content: Text(
+                              'Do you want to continue?',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
                             actions: [
                               ElevatedButton(
                                 onPressed: () {
@@ -366,6 +369,7 @@ class _SetUpState extends State<SetUp> {
                                 },
                                 child: Text('Cancel'),
                               ),
+                              SizedBox(width: 20),
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
@@ -379,6 +383,10 @@ class _SetUpState extends State<SetUp> {
                                     ),
                                   );
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple,
+                                  onPrimary: Colors.white,
+                                ),
                                 child: Text('Continue'),
                               ),
                             ],

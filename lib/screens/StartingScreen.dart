@@ -105,7 +105,8 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:pdfviewer/screens/PrivacyPolicy.dart';
+// import 'package:url_launcher/url_launcher.dart';
 import 'package:pdfviewer/screens/SetUp.dart';
 
 class StartingScreen extends StatefulWidget {
@@ -131,13 +132,13 @@ class _StartingScreenState extends State<StartingScreen> {
     'Keep your PDF files secure and protected',
   ];
 
-  void _launchPrivacyPolicyURL() async {
-    const privacyPolicyURL = 'https://fluttergems.dev/';
-    if (await canLaunch(privacyPolicyURL)) {
-      await launch(privacyPolicyURL);
-    } else {
-      print('Could not launch $privacyPolicyURL');
-    }
+  void _launchPrivacyPolicyURL(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PrivacyPolicy(),
+      ),
+    );
   }
 
   @override
@@ -215,7 +216,7 @@ class _StartingScreenState extends State<StartingScreen> {
           SizedBox(height: 50),
           TextButton(
             onPressed: () {
-              _launchPrivacyPolicyURL();
+              _launchPrivacyPolicyURL(context);
             },
             child: Text(
               'Privacy Policy',
